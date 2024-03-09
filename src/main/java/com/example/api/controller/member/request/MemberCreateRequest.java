@@ -1,14 +1,13 @@
 package com.example.api.controller.member.request;
 
 import com.example.api.service.member.request.MemberCreateServiceRequest;
-import com.example.domain.common.Address;
 import com.example.domain.member.RoleType;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,8 +24,9 @@ public class MemberCreateRequest {
     private String password;
 
     @NotBlank(message = "이름은 필수 입력 값입니다.")
-
     private String name;
+
+    @Size(min = 11, max = 11)
     private String phone;
 
     @Positive(message = "나이는 필수 입력 값입니다.")

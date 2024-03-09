@@ -2,34 +2,33 @@ package com.example.api.controller.member;
 
 import com.example.api.controller.member.request.MemberCreateRequest;
 import com.example.api.service.member.MemberService;
-import com.example.config.SecurityConfig;
+import com.example.config.jwt.JwtTokenFilter;
+import com.example.config.jwt.JwtTokenProvider;
 import com.example.domain.member.RoleType;
+import com.example.fixture.member.MemberConstant;
+import com.example.util.jwt.TestSecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.example.domain.member.RoleType.MEMBER;
-import static com.example.fixture.member.MemberFixture.*;
+import static com.example.fixture.member.MemberConstant.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = MemberController.class,
-        excludeAutoConfiguration = SecurityAutoConfiguration.class,
-        excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class)
-})
+@WebMvcTest(controllers = MemberController.class)
+@Import(TestSecurityConfig.class)
 class MemberControllerTest {
 
     @Autowired
@@ -41,11 +40,14 @@ class MemberControllerTest {
     @MockBean
     private MemberService memberService;
 
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
+
     @DisplayName("회원 가입을 한다.")
     @Test
     void createMember() throws Exception {
 
-        MemberCreateRequest request = createMemberRequest(TEST_EMAIL, TEST_PASSWORD, TEST_NAME,
+        MemberCreateRequest request = createMemberRequest(MemberConstant.TEST_EMAIL, TEST_PASSWORD, TEST_NAME,
                 TEST_PHONE, TEST_AGE, TEST_CITY, TEST_STREET, TEST_ZIP_CODE, MEMBER);
 
         mockMvc.perform(post("/api/members/new")

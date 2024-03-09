@@ -33,7 +33,7 @@ logging:
         type.descriptor.sql: trace
 security:
   jwt:
-    secret-key: DadFufN4Oui8Bfv3ScFj6R9fyJ9hD45E6AGFsXgFsRhT4YSdSb
+    secret-key: IbFqfWcbGtNkwU8T3OGTkfplLCeUGpbSwubFe8uvhZ9efOMAnR7E6W4LOgHenKC5qJtQPzopFBGhhzRcehxs9qex0t
     token:
       expire-length: 3600000
       refresh-expire-length: 6000000
