@@ -35,8 +35,8 @@ security:
   jwt:
     secret-key: IbFqfWcbGtNkwU8T3OGTkfplLCeUGpbSwubFe8uvhZ9efOMAnR7E6W4LOgHenKC5qJtQPzopFBGhhzRcehxs9qex0t
     token:
-      expire-length: 3600000
-      refresh-expire-length: 6000000
+      expire-length: 12000000
+      refresh-expire-length: 604800000
 redis:
   host: 127.0.0.1
-  port: 3306
+  port: 6379

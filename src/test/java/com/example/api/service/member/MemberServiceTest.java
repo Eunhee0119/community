@@ -2,18 +2,16 @@ package com.example.api.service.member;
 
 import com.example.api.service.member.request.MemberCreateServiceRequest;
 import com.example.api.service.member.response.MemberResponse;
-import com.example.domain.common.Address;
 import com.example.domain.member.RoleType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import static com.example.domain.member.RoleType.MEMBER;
 import static com.example.fixture.member.MemberConstant.*;
-import static com.example.fixture.member.MemberFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
@@ -24,7 +22,7 @@ class MemberServiceTest {
     MemberService memberService;
 
     @Autowired
-    BCryptPasswordEncoder bCryptPasswordEncoder;
+    PasswordEncoder passwordEncoder;
 
 
     @DisplayName("회원을 생성한다.")
@@ -43,7 +41,7 @@ class MemberServiceTest {
         assertThat(createdMember)
                 .extracting("email", "name", "phone", "age", "roleType")
                 .containsExactlyInAnyOrder(TEST_EMAIL, TEST_NAME, TEST_PHONE, TEST_AGE, MEMBER);
-        assertThat(bCryptPasswordEncoder.matches(TEST_PASSWORD, createdMember.getPassword())).isTrue();
+        assertThat(passwordEncoder.matches(TEST_PASSWORD, createdMember.getPassword())).isTrue();
         assertThat(createdMember.getAddress())
                 .extracting("city", "street", "zipcode")
                 .containsExactlyInAnyOrder(TEST_CITY, TEST_STREET, TEST_ZIP_CODE);
@@ -65,7 +63,7 @@ class MemberServiceTest {
         assertThat(createdMember)
                 .extracting("email", "name", "phone", "age", "roleType")
                 .containsExactlyInAnyOrder(TEST_EMAIL, TEST_NAME, TEST_PHONE, TEST_AGE, MEMBER);
-        assertThat(bCryptPasswordEncoder.matches(TEST_PASSWORD, createdMember.getPassword())).isTrue();
+        assertThat(passwordEncoder.matches(TEST_PASSWORD, createdMember.getPassword())).isTrue();
         assertThat(createdMember.getAddress())
                 .extracting("city", "street", "zipcode")
                 .containsExactlyInAnyOrder(TEST_CITY, TEST_STREET, TEST_ZIP_CODE);

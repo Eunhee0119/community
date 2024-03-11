@@ -6,11 +6,11 @@ import lombok.Getter;
 @Getter
 public class TokenDto {
     private String accessToken;
-    private String reflashToken;
+    private String refreshToken;
 
     @Builder
     public TokenDto(String accessToken, String reflashToken) {
         this.accessToken = accessToken;
-        this.reflashToken = reflashToken;
+        this.refreshToken = reflashToken;
     }
 }

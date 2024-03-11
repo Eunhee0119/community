@@ -2,7 +2,6 @@ package com.example.api.controller.member;
 
 import com.example.api.controller.member.request.MemberCreateRequest;
 import com.example.api.service.member.MemberService;
-import com.example.config.jwt.JwtTokenFilter;
 import com.example.config.jwt.JwtTokenProvider;
 import com.example.domain.member.RoleType;
 import com.example.fixture.member.MemberConstant;
@@ -12,7 +11,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
@@ -51,8 +49,8 @@ class MemberControllerTest {
                 TEST_PHONE, TEST_AGE, TEST_CITY, TEST_STREET, TEST_ZIP_CODE, MEMBER);
 
         mockMvc.perform(post("/api/members/new")
-                .content(objectMapper.writeValueAsString(request))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(HttpStatus.OK.value()))
@@ -143,7 +141,7 @@ class MemberControllerTest {
     }
 
     private MemberCreateRequest createMemberRequest(String email, String password, String name, String phone,
-                                                           int age, String city, String street, String zipcode, RoleType roleType) {
+                                                    int age, String city, String street, String zipcode, RoleType roleType) {
 
         return MemberCreateRequest.builder()
                 .email(email)

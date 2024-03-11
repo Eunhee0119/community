@@ -4,13 +4,11 @@ import com.example.api.controller.auth.dto.TokenDto;
 import com.example.api.controller.auth.request.TokenRequest;
 import com.example.api.service.auth.AuthService;
 import com.example.config.jwt.JwtTokenProvider;
-import com.example.domain.member.MemberRepository;
-import com.example.fixture.auth.TokenFixture;
 import com.example.util.jwt.TestSecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,11 +17,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static com.example.common.jwt.TokenConstants.TOKEN_HEADER;
-import static com.example.fixture.auth.TokenFixture.*;
+import static com.example.common.jwt.TokenConstants.*;
+import static com.example.fixture.auth.TokenFixture.createDefaultTokenRequest;
+import static com.example.fixture.auth.TokenFixture.createTokenRequest;
 import static com.example.fixture.member.MemberConstant.TEST_EMAIL;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -39,6 +39,7 @@ class AuthControllerTest {
 
     @MockBean
     private AuthService authService;
+
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
 
@@ -48,15 +49,15 @@ class AuthControllerTest {
         //given
         TokenRequest tokenRequest = createDefaultTokenRequest();
         TokenDto tokenMockDto = TokenDto.builder()
-                                        .accessToken("accessToken")
-                                        .reflashToken(null)
-                                        .build();
+                .accessToken("accessToken")
+                .reflashToken(null)
+                .build();
         given(authService.getToken(any())).willReturn(tokenMockDto);
 
         //when//then
-        mockMvc.perform(post("/api/authentication")
-                .content(objectMapper.writeValueAsString(tokenRequest))
-                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/api/auth/authentication")
+                        .content(objectMapper.writeValueAsString(tokenRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(HttpStatus.OK.value()))
@@ -71,10 +72,10 @@ class AuthControllerTest {
         //given
         String invalidEmail = "invalidt";
         String validPassword = "test123!@#";
-        TokenRequest tokenRequest = createTokenRequest(invalidEmail,validPassword);
+        TokenRequest tokenRequest = createTokenRequest(invalidEmail, validPassword);
 
         //when//then
-        mockMvc.perform(post("/api/authentication")
+        mockMvc.perform(post("/api/auth/authentication")
                         .content(objectMapper.writeValueAsString(tokenRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -89,10 +90,10 @@ class AuthControllerTest {
     void getAuthenticationWithInvalidPassword() throws Exception {
         //given
         String invalidPassword = "";
-        TokenRequest tokenRequest = createTokenRequest(TEST_EMAIL,invalidPassword);
+        TokenRequest tokenRequest = createTokenRequest(TEST_EMAIL, invalidPassword);
 
         //when//then
-        mockMvc.perform(post("/api/authentication")
+        mockMvc.perform(post("/api/auth/authentication")
                         .content(objectMapper.writeValueAsString(tokenRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -102,6 +103,34 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.message").value("패스워드는 필수 입력 값입니다."));
     }
 
+    @DisplayName("리프레시 토큰으로 토큰을 제발급한다.")
+    @Test()
+    void regenerateToken() throws Exception {
+        //given
+        Cookie cookie = new Cookie(
+                "refresh_token",
+                TOKEN_PREFIX + "refreshToken"
+        );
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setMaxAge(Integer.MAX_VALUE);
 
-
+        String accessToken = "accesstoken";
+        String newAccessToken = "newAccessToken";
+        String newRefreshToken = "newRefreshToken";
+        given(jwtTokenProvider.resolveToken(any())).willReturn(accessToken);
+        given(authService.regenerateToken(any())).willReturn(TokenDto.builder()
+                .accessToken(newAccessToken)
+                .reflashToken(newRefreshToken)
+                .build());
+        //when //then
+        mockMvc.perform(post("/api/auth/regeneratetoken")
+                        .cookie(cookie)
+                        .header(AUTHORIZATION, TOKEN_PREFIX + accessToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(cookie().value(REFRESH_TOKEN_COOKIE, newRefreshToken))
+                .andExpect(header().exists(AUTHORIZATION));
+    }
 }

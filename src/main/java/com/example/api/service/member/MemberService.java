@@ -7,18 +7,20 @@ import com.example.domain.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberService {
 
     private final MemberRepository memberRepository;
 
+    private final PasswordEncoder passwordEncoder;
 
-    private final PasswordEncoder bCryptPasswordEncoder;
-
+    @Transactional
     public MemberResponse createMember(MemberCreateServiceRequest memberCreateRequest) {
-        Member member = memberCreateRequest.toEntity(bCryptPasswordEncoder.encode(memberCreateRequest.getPassword()));
+        Member member = memberCreateRequest.toEntity(passwordEncoder.encode(memberCreateRequest.getPassword()));
         Member createdMember = memberRepository.save(member);
 
         return MemberResponse.of(createdMember);

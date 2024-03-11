@@ -2,6 +2,7 @@ package com.example.config.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static com.example.common.jwt.TokenConstants.TOKEN_HEADER;
+
 @Component
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
@@ -21,11 +24,25 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = jwtTokenProvider.resolveToken(request);
+        String token = jwtTokenProvider.resolveToken(request.getHeader(TOKEN_HEADER));
         try {
-            if (token != null && jwtTokenProvider.validateToken(token)) {
-                Authentication auth = jwtTokenProvider.getAuthentication(token);
-                SecurityContextHolder.getContext().setAuthentication(auth);
+            if (token != null) {
+                if (jwtTokenProvider.validateToken(token)) {
+                    Authentication auth = jwtTokenProvider.getAuthentication(token);
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                } else {
+                    Cookie[] cookies = request.getCookies();
+                    String tokenByCookie = "";
+                    for (Cookie cookie : cookies) {
+                        tokenByCookie = cookie.getValue();
+                    }
+                    String refreshToken = jwtTokenProvider.resolveToken(tokenByCookie);
+                    if (jwtTokenProvider.validateRefreshToken(refreshToken)) {
+                        Authentication refreshAuth = jwtTokenProvider.getAuthentication(refreshToken);
+                        SecurityContextHolder.getContext().setAuthentication(refreshAuth);
+                        response.addHeader(TOKEN_HEADER, jwtTokenProvider.createAccessToken(refreshAuth));
+                    }
+                }
             }
         } catch (AuthenticationException e) {
             SecurityContextHolder.clearContext();

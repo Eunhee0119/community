@@ -1,5 +1,6 @@
 package com.example.config.jwt;
 
+import com.example.api.controller.auth.dto.TokenDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -7,10 +8,10 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,9 +24,9 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.example.common.jwt.TokenConstants.TOKEN_HEADER;
 import static com.example.common.jwt.TokenConstants.TOKEN_PREFIX;
 
 @Slf4j
@@ -38,17 +39,22 @@ public class JwtTokenProvider implements InitializingBean {
 
     private final long accessExpireTime;
 
-    private final long refreshExpireTime;
+    public final long refreshExpireTime;
 
     private Key key;
 
 
+    private final RedisTemplate<String, String> redisTemplate;
+
+
     public JwtTokenProvider(@Value("${security.jwt.secret-key}") String secretKey,
                             @Value("${security.jwt.token.expire-length}") long accessExpireTime,
-                            @Value("${security.jwt.token.refresh-expire-length}") long refreshExpireTime) {
+                            @Value("${security.jwt.token.refresh-expire-length}") long refreshExpireTime,
+                            RedisTemplate<String, String> redisTemplate) {
         this.secretKey = secretKey;
         this.accessExpireTime = accessExpireTime;
         this.refreshExpireTime = refreshExpireTime;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -57,9 +63,7 @@ public class JwtTokenProvider implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-
-    public String resolveToken(HttpServletRequest req) {
-        String bearerToken = req.getHeader(TOKEN_HEADER);
+    public String resolveToken(String bearerToken) {
         if (bearerToken != null && bearerToken.startsWith(TOKEN_PREFIX)) {
             return bearerToken.substring(7);
         }
@@ -67,11 +71,21 @@ public class JwtTokenProvider implements InitializingBean {
     }
 
     public String createRefreshToken(Authentication authentication) {
-        return createToken(authentication, refreshExpireTime);
+        String refreshToken = createToken(authentication, refreshExpireTime);
+
+        deleteRefreshTokenByEmail(authentication.getName());
+
+        redisTemplate.opsForValue().set(
+                authentication.getName(),
+                refreshToken,
+                refreshExpireTime,
+                TimeUnit.MILLISECONDS
+        );
+        return refreshToken;
     }
 
 
-    public String createAccessToken(Authentication authentication){
+    public String createAccessToken(Authentication authentication) {
         return createToken(authentication, accessExpireTime);
     }
 
@@ -90,33 +104,68 @@ public class JwtTokenProvider implements InitializingBean {
                 .compact();
     }
 
-    public Authentication getAuthentication(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
-        User principal =new User(claims.getSubject(), "", authorities);
-        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+
+    public TokenDto createTokenDto(Authentication authentication) {
+        return TokenDto.builder()
+                .accessToken(createAccessToken(authentication))
+                .reflashToken(createRefreshToken(authentication))
+                .build();
     }
 
-    public boolean validateToken(String token){
-        try{
+    public Authentication getAuthentication(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            Collection<? extends GrantedAuthority> authorities =
+                    Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+                            .map(SimpleGrantedAuthority::new)
+                            .collect(Collectors.toList());
+            User principal = new User(claims.getSubject(), "", authorities);
+            return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+        } catch (ExpiredJwtException e) {
+            throw new IllegalArgumentException("유효하지 않은 토큰 정보입니다.");
+        }
+    }
+
+    public boolean validateToken(String token) {
+        try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        }catch(io.jsonwebtoken.security.SecurityException | MalformedJwtException e){
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("잘못된 JWT 서명입니다.");
-        }catch(ExpiredJwtException e){
+        } catch (ExpiredJwtException e) {
             log.info("만료된 JWT 토큰입니다.");
-        }catch(UnsupportedJwtException e){
+        } catch (UnsupportedJwtException e) {
             log.info("지원하지 않는 JWT 토큰입니다.");
-        }catch(IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             log.info("JWT 토큰이 잘못되었습니다.");
         }
         return false;
+    }
+
+
+    public boolean validateRefreshToken(String refreshToken) {
+        Authentication authentication = getAuthentication(refreshToken);
+
+        String validRefreshToken = redisTemplate.opsForValue().get(authentication.getName());
+
+        if (!refreshToken.equals(validRefreshToken)) {
+            redisTemplate.delete(authentication.getName());
+            return false;
+        }
+
+        return true;
+    }
+
+
+    public String getRefreshTokenByEmail(String email) {
+        return redisTemplate.opsForValue().get(email);
+    }
+
+    public void deleteRefreshTokenByEmail(String email) {
+        redisTemplate.delete(email);
     }
 }

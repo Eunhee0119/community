@@ -49,16 +49,16 @@ public class SecurityConfig {
                 )
                 .addFilter(corsFilter)
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
-                .formLogin(formLogin-> formLogin.disable())
-                .httpBasic(httpBasic->httpBasic.disable())
+                .formLogin(formLogin -> formLogin.disable())
+                .httpBasic(httpBasic -> httpBasic.disable())
                 .exceptionHandling(authenticationManager -> authenticationManager
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(jwtAccessDeniedHandler))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
-                                "/api/members/new"
+                                "/api/members/new", "/api/auth/*"
                         ).anonymous()
-                        .requestMatchers("/api/*","/api/**").hasAnyRole("MEMBER","ADMIN")
+                        .requestMatchers("/api/*", "/api/**").hasAnyRole("MEMBER", "ADMIN")
                         .anyRequest().permitAll()
                 );
 
