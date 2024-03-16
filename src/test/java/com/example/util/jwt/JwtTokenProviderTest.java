@@ -1,6 +1,6 @@
 package com.example.util.jwt;
 
-import com.example.config.jwt.JwtTokenProvider;
+import com.example.community.config.jwt.JwtTokenProvider;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -172,10 +172,10 @@ class JwtTokenProviderTest {
     @Test
     void validateRefreshTokenWithTimeoutToken() throws InterruptedException {
         //given
-        String refreshToken = createRefreshtoken(30000);
+        String refreshToken = createRefreshtoken(20000);
 
         //when
-        Thread.sleep(30000);
+        Thread.sleep(20000);
 
         assertThatThrownBy(() -> jwtTokenProvider.validateRefreshToken(refreshToken));
     }

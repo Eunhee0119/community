@@ -1,6 +1,6 @@
 package com.example.util.jwt;
 
-import com.example.config.jwt.JwtTokenFilter;
+import com.example.community.config.jwt.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -11,8 +11,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @TestConfiguration
 @RequiredArgsConstructor
 public class TestSecurityConfig {
-
-    private final JwtTokenFilter jwtTokenFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
