@@ -122,7 +122,7 @@ public class CategoryControllerTest {
                         .content(objectMapper.writeValueAsString(updateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$.code").value(HttpStatus.NO_CONTENT.value()))
                 .andExpect(jsonPath("$.status").value(HttpStatus.NO_CONTENT.name()))
                 .andExpect(jsonPath("$.data").isEmpty());

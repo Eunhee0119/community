@@ -1,5 +1,6 @@
 package com.example.community.category.service;
 
+import com.example.community.category.exception.NoSuchCategoryFoundException;
 import com.example.community.category.domain.Category;
 import com.example.community.category.respository.CategoryRepository;
 import com.example.community.category.service.request.CategoryCreateServiceRequest;
@@ -79,8 +80,9 @@ class CategoryServiceTest {
                 .build();
 
         //when//then
-        assertThatThrownBy(() -> categoryService.createCategory(newCategoryRequest)
-                , "존재하지 않는 상위 카테고리입니다.");
+        assertThatThrownBy(() -> categoryService.createCategory(newCategoryRequest))
+                .isInstanceOf(NoSuchCategoryFoundException.class)
+                .hasMessage("존재하지 않는 상위 카테고리입니다.");
     }
 
     @DisplayName("카테고리 정보를 변경한다.")
@@ -114,8 +116,9 @@ class CategoryServiceTest {
                 .name("이름").build();
 
         //when //then
-        assertThatThrownBy(()->categoryService.updateCategory(categoryRequest)
-                ,"존재하지 않는 카테고리입니다.");
+        assertThatThrownBy(()->categoryService.updateCategory(categoryRequest))
+                .isInstanceOf(NoSuchCategoryFoundException.class)
+                .hasMessage("존재하지 않는 카테고리입니다.");
     }
 
     @DisplayName("존재하지 않는 상위 카테고리의 하위로 카테고리를 이동할 경우 에러가 발생한다.")
@@ -133,8 +136,9 @@ class CategoryServiceTest {
                 .parentId(noExistParentId).build();
 
         //when //then
-        assertThatThrownBy(()->categoryService.updateCategory(categoryRequest)
-                ,"존재하지 않는 상위 카테고리입니다.");
+        assertThatThrownBy(()->categoryService.updateCategory(categoryRequest))
+                .isInstanceOf(NoSuchCategoryFoundException.class)
+                .hasMessage("존재하지 않는 상위 카테고리입니다.");
     }
 
     @DisplayName("카테고리를 삭제한다.")
@@ -157,8 +161,9 @@ class CategoryServiceTest {
     void deleteCategoryWhenNoExistCategory() {
         //given
         //when//then
-        assertThatThrownBy(() -> categoryService.deleteCategory(0L)
-                , "이미 존재하지 않는 카테고리입니다.");
+        assertThatThrownBy(() -> categoryService.deleteCategory(0L))
+                .isInstanceOf(NoSuchCategoryFoundException.class)
+                .hasMessage("이미 존재하지 않는 카테고리입니다.");
     }
 
     @DisplayName("전체 카테고리를 조회한다.")

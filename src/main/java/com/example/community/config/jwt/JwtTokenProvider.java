@@ -1,6 +1,7 @@
 package com.example.community.config.jwt;
 
 import com.example.community.auth.controller.dto.TokenDto;
+import com.example.community.auth.exception.InvalidTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -126,7 +128,7 @@ public class JwtTokenProvider implements InitializingBean {
             User principal = new User(claims.getSubject(), "", authorities);
             return new UsernamePasswordAuthenticationToken(principal, token, authorities);
         } catch (ExpiredJwtException e) {
-            throw new IllegalArgumentException("유효하지 않은 토큰 정보입니다.");
+            throw new InvalidTokenException("유효하지 않은 토큰 정보입니다.");
         }
     }
 

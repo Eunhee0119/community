@@ -1,5 +1,6 @@
 package com.example.community.category.domain;
 
+import com.example.community.category.exception.BadRequestCategoryException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -22,8 +23,9 @@ class CategoryTest {
     void validCategoryName2(){
         //given //when
         //then
-        assertThatThrownBy(()->Category.validCategoryName("01카테고리")
-        ,"카테고리명은 영문,한글로 시작하며 영문,숫자,한글을 포함하여 20자를 넘어갈 수 없습니다.");
+        assertThatThrownBy(()->Category.validCategoryName("01카테고리"))
+                .isInstanceOf(BadRequestCategoryException.class)
+                .hasMessage("카테고리명은 영문,한글로 시작하며 영문,숫자,한글을 포함하여 20자를 넘어갈 수 없습니다.");
     }
 
     @DisplayName("카테고리명은 20자를 넘을 수 없다.")
@@ -31,8 +33,9 @@ class CategoryTest {
     void validCategoryName3(){
         //given //when
         //then
-        assertThatThrownBy(()->Category.validCategoryName("카테고리명이 20자가 넘어가면 에러가 발생한다")
-                ,"카테고리명은 영문,한글로 시작하며 영문,숫자,한글을 포함하여 20자를 넘어갈 수 없습니다.");
+        assertThatThrownBy(()->Category.validCategoryName("카테고리명이 20자가 넘어가면 에러가 발생한다"))
+                .isInstanceOf(BadRequestCategoryException.class)
+                .hasMessage("카테고리명은 영문,한글로 시작하며 영문,숫자,한글을 포함하여 20자를 넘어갈 수 없습니다.");
     }
 
 }

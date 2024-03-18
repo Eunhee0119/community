@@ -2,6 +2,7 @@ package com.example.community.auth.service;
 
 import com.example.community.auth.controller.dto.TokenDto;
 import com.example.community.auth.controller.request.TokenRequest;
+import com.example.community.auth.exception.InvalidTokenException;
 import com.example.community.config.jwt.JwtTokenProvider;
 import com.example.community.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class AuthService {
 
         if (!refreshToken.equals(validRefreshToken)) {
             jwtTokenProvider.deleteRefreshTokenByEmail(authentication.getName());
-            throw new IllegalArgumentException("유효하지 않은 접근입니다.");
+            throw new InvalidTokenException("유효하지 않은 접근입니다.");
         }
 
         TokenDto tokenDto = jwtTokenProvider.createTokenDto(authentication);

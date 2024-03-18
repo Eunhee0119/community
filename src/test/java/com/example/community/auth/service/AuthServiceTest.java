@@ -2,6 +2,7 @@ package com.example.community.auth.service;
 
 import com.example.community.auth.controller.dto.TokenDto;
 import com.example.community.auth.controller.request.TokenRequest;
+import com.example.community.auth.exception.InvalidTokenException;
 import com.example.community.member.domain.Member;
 import com.example.community.member.repository.MemberRepository;
 import com.example.util.fixture.member.MemberFixture;
@@ -125,7 +126,8 @@ class AuthServiceTest {
         Thread.sleep(20000);
 
         //then
-        assertThatThrownBy(() -> authService.regenerateToken(refreshToken));
+        assertThatThrownBy(() -> authService.regenerateToken(refreshToken))
+                .isInstanceOf(InvalidTokenException.class);
     }
 
     @DisplayName("재발급 이전의 토큰으로 토큰을 재발급할 경우 에러가 발생한다.")
@@ -138,6 +140,7 @@ class AuthServiceTest {
 
         //when //then
         assertThatThrownBy(() -> authService.regenerateToken(invalidToken))
+                .isInstanceOf(InvalidTokenException.class)
                 .hasMessage("유효하지 않은 접근입니다.");
     }
 

@@ -1,5 +1,6 @@
 package com.example.community.category.domain;
 
+import com.example.community.category.exception.BadRequestCategoryException;
 import com.example.community.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -57,6 +58,6 @@ public class Category extends BaseEntity {
     }
 
     public static void validCategoryName(String name){
-        if(!name.matches(namePattern)) throw new IllegalIdentifierException("카테고리명은 영문,한글로 시작하며 영문,숫자,한글을 포함하여 20자를 넘어갈 수 없습니다.");
+        if(!name.matches(namePattern)) throw new BadRequestCategoryException("카테고리명은 영문,한글로 시작하며 영문,숫자,한글을 포함하여 20자를 넘어갈 수 없습니다.");
     }
 }

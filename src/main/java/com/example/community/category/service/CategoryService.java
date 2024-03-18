@@ -1,12 +1,12 @@
 package com.example.community.category.service;
 
+import com.example.community.category.exception.NoSuchCategoryFoundException;
 import com.example.community.category.domain.Category;
 import com.example.community.category.respository.CategoryRepository;
 import com.example.community.category.service.request.CategoryCreateServiceRequest;
 import com.example.community.category.service.request.CategoryUpdateServiceRequest;
 import com.example.community.category.service.response.CategoryResponse;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.boot.model.naming.IllegalIdentifierException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +24,7 @@ public class CategoryService {
     public CategoryResponse createCategory(CategoryCreateServiceRequest categoryCreateRequest) {
         Category parentCategory = null;
         if (!Objects.isNull(categoryCreateRequest.getParentId())) {
-            parentCategory = categoryRepository.findById(categoryCreateRequest.getParentId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상위 카테고리입니다."));
+            parentCategory = categoryRepository.findById(categoryCreateRequest.getParentId()).orElseThrow(() -> new NoSuchCategoryFoundException("존재하지 않는 상위 카테고리입니다."));
         }
         Category category = categoryCreateRequest.toEntity(parentCategory);
         return CategoryResponse.of(categoryRepository.save(category));
@@ -33,14 +33,14 @@ public class CategoryService {
     @Transactional
     public CategoryResponse updateCategory(CategoryUpdateServiceRequest categoryRequest) {
         Category category = categoryRepository.findById(categoryRequest.getId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
+                .orElseThrow(() -> new NoSuchCategoryFoundException("존재하지 않는 카테고리입니다."));
 
         category.changeName(categoryRequest.getName());
 
         Category parent = null;
         if (categoryRequest.getParentId() > 0) {
             parent = categoryRepository.findById(categoryRequest.getParentId())
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상위 카테고리입니다."));
+                    .orElseThrow(() -> new NoSuchCategoryFoundException("존재하지 않는 상위 카테고리입니다."));
         }
 
         if (!category.getParent().equals(parent)) {
@@ -53,7 +53,7 @@ public class CategoryService {
     @Transactional
     public void deleteCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalIdentifierException("이미 존재하지 않는 카테고리입니다."));
+                .orElseThrow(() -> new NoSuchCategoryFoundException("이미 존재하지 않는 카테고리입니다."));
         categoryRepository.delete(category);
     }
 
