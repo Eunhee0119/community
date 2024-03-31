@@ -1,7 +1,7 @@
 package com.example.community.member.controller.request;
 
-import com.example.community.member.service.request.MemberCreateServiceRequest;
 import com.example.community.member.domain.RoleType;
+import com.example.community.member.service.request.MemberCreateServiceRequest;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;

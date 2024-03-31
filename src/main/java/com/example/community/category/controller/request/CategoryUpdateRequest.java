@@ -1,6 +1,5 @@
 package com.example.community.category.controller.request;
 
-import com.example.community.category.service.request.CategoryCreateServiceRequest;
 import com.example.community.category.service.request.CategoryUpdateServiceRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

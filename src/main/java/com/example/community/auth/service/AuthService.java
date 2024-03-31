@@ -20,8 +20,6 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    private final MemberRepository memberRepository;
-
 
     @Transactional
     public TokenDto getToken(TokenRequest tokenRequest) {

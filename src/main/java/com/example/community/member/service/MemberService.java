@@ -1,9 +1,9 @@
 package com.example.community.member.service;
 
-import com.example.community.member.service.response.MemberResponse;
-import com.example.community.member.service.request.MemberCreateServiceRequest;
 import com.example.community.member.domain.Member;
 import com.example.community.member.repository.MemberRepository;
+import com.example.community.member.service.request.MemberCreateServiceRequest;
+import com.example.community.member.service.response.MemberResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

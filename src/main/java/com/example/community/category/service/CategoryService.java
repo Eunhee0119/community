@@ -1,7 +1,7 @@
 package com.example.community.category.service;
 
-import com.example.community.category.exception.NoSuchCategoryFoundException;
 import com.example.community.category.domain.Category;
+import com.example.community.category.exception.NoSuchCategoryFoundException;
 import com.example.community.category.respository.CategoryRepository;
 import com.example.community.category.service.request.CategoryCreateServiceRequest;
 import com.example.community.category.service.request.CategoryUpdateServiceRequest;

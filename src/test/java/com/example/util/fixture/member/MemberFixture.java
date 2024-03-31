@@ -9,27 +9,15 @@ public class MemberFixture {
 
 
     public static Member createDefaultMember() {
-        Address address = new Address(TEST_CITY, TEST_STREET, TEST_ZIP_CODE);
-        return Member.builder()
-                .email(TEST_EMAIL)
-                .password(TEST_PASSWORD)
-                .name(TEST_NAME)
-                .phone(TEST_PHONE)
-                .age(TEST_AGE)
-                .address(address)
-                .build();
+        return createCustomMember(TEST_EMAIL,TEST_PASSWORD,TEST_NAME,TEST_PHONE,TEST_AGE,TEST_CITY,TEST_STREET,TEST_ZIP_CODE);
+    }
+
+    public static Member createDefaultMember(String email, String password) {
+        return createCustomMember(email,password,TEST_NAME,TEST_PHONE,TEST_AGE,TEST_CITY,TEST_STREET,TEST_ZIP_CODE);
     }
 
     public static Member createEncodedPasswordMember() {
-        Address address = new Address(TEST_CITY, TEST_STREET, TEST_ZIP_CODE);
-        return Member.builder()
-                .email(TEST_EMAIL)
-                .password(TEST_ENC_PASSWORD)
-                .name(TEST_NAME)
-                .phone(TEST_PHONE)
-                .age(TEST_AGE)
-                .address(address)
-                .build();
+        return createCustomMember(TEST_EMAIL,TEST_ENC_PASSWORD,TEST_NAME,TEST_PHONE,TEST_AGE,TEST_CITY,TEST_STREET,TEST_ZIP_CODE);
     }
 
     public static Member createCustomMember(String email, String password, String name, String phone, int age

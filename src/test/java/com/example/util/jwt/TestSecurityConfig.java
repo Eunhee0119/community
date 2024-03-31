@@ -1,6 +1,5 @@
 package com.example.util.jwt;
 
-import com.example.community.config.jwt.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

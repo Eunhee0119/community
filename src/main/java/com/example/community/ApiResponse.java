@@ -20,7 +20,7 @@ public class ApiResponse<T> {
     }
 
 
-    public static ApiResponse<CategoryResponse> noContent() {
+    public static <T>  ApiResponse<T> noContent() {
         return of(HttpStatus.NO_CONTENT, null);
     }
 

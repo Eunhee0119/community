@@ -1,5 +1,6 @@
 package com.example.util.jwt;
 
+import com.example.community.auth.exception.InvalidTokenException;
 import com.example.community.config.jwt.JwtTokenProvider;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -120,7 +121,7 @@ class JwtTokenProviderTest {
                 .compact();
 
         //when //then
-        assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(InvalidTokenException.class)
                 .isThrownBy(() -> jwtTokenProvider.getAuthentication(expiredToken));
     }
 
@@ -135,7 +136,7 @@ class JwtTokenProviderTest {
                 .compact();
 
         //when //then
-        assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(InvalidTokenException.class)
                 .isThrownBy(() -> jwtTokenProvider.getAuthentication(expiredToken));
     }
 

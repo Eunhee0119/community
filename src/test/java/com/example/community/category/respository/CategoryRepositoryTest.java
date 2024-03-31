@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.example.util.fixture.category.CategoryFixture.newCategory;
+import static com.example.util.fixture.category.CategoryFixture.createCategory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 
@@ -27,12 +27,12 @@ class CategoryRepositoryTest {
     @Test()
     void findAllOrderByParentIdAsc() {
         //given
-        Category category1 = CategoryFixture.newCategory("카테고리1");
-        Category category2 = newCategory("카테고리2",category1);
-        Category category3 = newCategory("카테고리3",category1);
-        Category category4 = CategoryFixture.newCategory("카테고리4");
-        Category category5 = newCategory("카테고리5",category3);
-        Category category6 = newCategory("카테고리6",category4);
+        Category category1 = CategoryFixture.createCategory("카테고리1");
+        Category category2 = createCategory("카테고리2",category1);
+        Category category3 = createCategory("카테고리3",category1);
+        Category category4 = CategoryFixture.createCategory("카테고리4");
+        Category category5 = createCategory("카테고리5",category3);
+        Category category6 = createCategory("카테고리6",category4);
         categoryRepository.saveAll(List.of(category1, category2, category3, category4, category5, category6));
 
         //when
