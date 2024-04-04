@@ -1,18 +1,23 @@
 package com.example.community.board.domain.dto;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Data
+@NoArgsConstructor
 public class BoardSearchDto {
 
-
+    @NotNull(message = "카테고리를 선택해주세요.")
+    @Positive(message = "잘못된 카테고리 정보입니다.")
     private Long categoryId;
 
     private String title;

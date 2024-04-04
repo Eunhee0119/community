@@ -2,7 +2,6 @@ package com.example.community.board.service;
 
 import com.example.community.board.domain.Board;
 import com.example.community.board.domain.Image;
-import com.example.community.board.domain.dto.BoardDto;
 import com.example.community.board.domain.dto.BoardSearchDto;
 import com.example.community.board.exception.NoSuchBoardException;
 import com.example.community.board.exception.UnsupportedImageFormatException;
@@ -11,6 +10,7 @@ import com.example.community.board.repository.BoardRepository;
 import com.example.community.board.repository.ImageRepository;
 import com.example.community.board.service.request.BoardCreateServiceRequest;
 import com.example.community.board.service.request.BoardUpdateServiceRequest;
+import com.example.community.board.service.response.BoardListResponse;
 import com.example.community.board.service.response.BoardResponse;
 import com.example.community.category.domain.Category;
 import com.example.community.category.exception.BadRequestCategoryException;
@@ -24,7 +24,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -458,7 +457,7 @@ class BoardServiceTest {
         Board savedBoard = boardRepository.save(board);
 
         //when
-        boardService.deleteBoard(savedBoard.getId(), member.getId());
+        boardService.deleteBoard(savedBoard.getId(), member.getEmail());
         Optional<Board> findBoard = boardRepository.findById(savedBoard.getId());
 
         //then
@@ -479,7 +478,7 @@ class BoardServiceTest {
         imageRepository.save(image);
 
         //when
-        boardService.deleteBoard(savedBoard.getId(), member.getId());
+        boardService.deleteBoard(savedBoard.getId(), member.getEmail());
         Optional<Board> findBoard = boardRepository.findById(savedBoard.getId());
 
         //then
@@ -490,7 +489,7 @@ class BoardServiceTest {
     @DisplayName("존재하지 않는 게시글을 삭제할 경우 에러가 발생한다.")
     @Test()
     void deleteBoardWhenNoExistTest() {
-        assertThatThrownBy(() -> boardService.deleteBoard(1000L, member.getId()))
+        assertThatThrownBy(() -> boardService.deleteBoard(1000L, member.getEmail()))
                 .isInstanceOf(NoSuchBoardException.class)
                 .hasMessage("존재하지 않는 게시글입니다.");
     }
@@ -506,7 +505,7 @@ class BoardServiceTest {
         Member anotherMember = memberRepository.save(createDefaultMember("newMember", "password"));
 
         //when//then
-        assertThatThrownBy(() -> boardService.deleteBoard(savedBoard.getId(), anotherMember.getId()))
+        assertThatThrownBy(() -> boardService.deleteBoard(savedBoard.getId(), anotherMember.getEmail()))
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessage("게시글 삭제 권한이 없습니다.");
     }
@@ -527,11 +526,11 @@ class BoardServiceTest {
         //when
         BoardSearchDto searchDto = BoardSearchDto.builder().build();
         Pageable pageable = Pageable.ofSize(10);
-        Page<BoardDto> boardList = boardService.getBoardList(pageable, searchDto);
+        BoardListResponse boardList = boardService.getBoardList(pageable, searchDto);
 
         //then
-        assertThat(boardList.getTotalPages()).isEqualTo(2);
-        assertThat(boardList.getContent().get(0)).extracting("title", "content", "categoryId", "writer")
+        assertThat(boardList.getTotalPage()).isEqualTo(2);
+        assertThat(boardList.getBoards().get(0)).extracting("title", "content", "categoryId", "writer")
                 .containsExactly("title", "content", category.getId(), member.getEmail());
     }
 
@@ -543,11 +542,11 @@ class BoardServiceTest {
         //when
         BoardSearchDto searchDto = BoardSearchDto.builder().build();
         Pageable pageable = Pageable.ofSize(10);
-        Page<BoardDto> boardList = boardService.getBoardList(pageable, searchDto);
+        BoardListResponse boardList = boardService.getBoardList(pageable, searchDto);
 
         //then
-        assertThat(boardList.getTotalPages()).isEqualTo(0);
-        assertThat(boardList.getContent().size()).isEqualTo(0);
+        assertThat(boardList.getTotalPage()).isEqualTo(0);
+        assertThat(boardList.getBoards().size()).isEqualTo(0);
     }
 
 
@@ -563,11 +562,11 @@ class BoardServiceTest {
         //when
         BoardSearchDto searchDto = BoardSearchDto.builder().title("title1").build();
         Pageable pageable = Pageable.ofSize(10);
-        Page<BoardDto> boardList = boardService.getBoardList(pageable, searchDto);
+        BoardListResponse boardList = boardService.getBoardList(pageable, searchDto);
 
         //then
-        assertThat(boardList.getTotalPages()).isEqualTo(1);
-        assertThat(boardList.getContent().size()).isEqualTo(7);
+        assertThat(boardList.getTotalPage()).isEqualTo(1);
+        assertThat(boardList.getBoards().size()).isEqualTo(7);
     }
 
 

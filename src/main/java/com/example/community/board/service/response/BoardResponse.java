@@ -1,6 +1,7 @@
 package com.example.community.board.service.response;
 
 import com.example.community.board.domain.Board;
+import com.example.community.board.domain.dto.BoardDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -46,6 +47,19 @@ public class BoardResponse {
                 .content(board.getContent())
                 .images(ImageResponse.of(board.getImages()))
                 .writer(board.getMember().getEmail())
+                .hitCount(board.getHitCnt())
+                .likeCount(board.getLikeCount())
+                .build();
+    }
+
+    public static BoardResponse of(BoardDto board) {
+        return BoardResponse.builder()
+                .id(board.getId())
+                .categoryId(board.getCategoryId())
+                .title(board.getTitle())
+                .content(board.getContent())
+                .images(ImageResponse.of(board.getImages()))
+                .writer(board.getWriter())
                 .hitCount(board.getHitCnt())
                 .likeCount(board.getLikeCount())
                 .build();

@@ -1,6 +1,6 @@
 package com.example.community;
 
-import com.example.community.category.service.response.CategoryResponse;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -10,6 +10,7 @@ public class ApiResponse<T> {
     private int code;
     private HttpStatus status;
     private String message;
+
     private T data;
 
     public ApiResponse(HttpStatus status, String message, T data) {
@@ -20,7 +21,7 @@ public class ApiResponse<T> {
     }
 
 
-    public static <T>  ApiResponse<T> noContent() {
+    public static <T> ApiResponse<T> noContent() {
         return of(HttpStatus.NO_CONTENT, null);
     }
 

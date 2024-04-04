@@ -12,6 +12,7 @@ import com.example.community.board.repository.ImageRepository;
 import com.example.community.board.repository.LikeRepository;
 import com.example.community.board.service.request.BoardCreateServiceRequest;
 import com.example.community.board.service.request.BoardUpdateServiceRequest;
+import com.example.community.board.service.response.BoardListResponse;
 import com.example.community.board.service.response.BoardResponse;
 import com.example.community.category.domain.Category;
 import com.example.community.category.exception.BadRequestCategoryException;
@@ -31,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.util.Objects.isNull;
@@ -102,8 +104,8 @@ public class BoardService {
 
 
     @Transactional
-    public void deleteBoard(Long boardId, Long userId) {
-        Board board = getAuthorizedBoard(boardId, userId);
+    public void deleteBoard(Long boardId, String memberEmail) {
+        Board board = getAuthorizedBoard(boardId, memberEmail);
         List<Image> images = board.getImages();
         boardRepository.delete(board);
 
@@ -132,8 +134,13 @@ public class BoardService {
     }
 
 
-    public Page<BoardDto> getBoardList(Pageable page, BoardSearchDto searchDto) {
-        return boardRepository.getSearchBoardList(page,searchDto);
+    public BoardListResponse getBoardList(Pageable page, BoardSearchDto searchDto) {
+        Page<BoardDto> pageBoard = boardRepository.getSearchBoardList(page, searchDto);
+
+        List<BoardResponse> boards = pageBoard.getContent().stream().map(BoardResponse::of).collect(Collectors.toList());
+        BoardListResponse boardListResponse = new BoardListResponse(boards, pageBoard.getTotalPages());
+
+        return boardListResponse;
     }
 
     private List<Image> uploadImages(List<MultipartFile> fileImages) {
@@ -147,9 +154,9 @@ public class BoardService {
         deletedImages.stream().forEach(it->fileService.delete(it.getOriginName()));
     }
 
-    private Board getAuthorizedBoard(Long boardId, Long userId) {
+    private Board getAuthorizedBoard(Long boardId, String memberEmail) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new NoSuchBoardException("존재하지 않는 게시글입니다."));
-        if(!board.getMember().getId().equals(userId)) throw new AccessDeniedException("게시글 삭제 권한이 없습니다.");
+        if(!board.getMember().getEmail().equals(memberEmail)) throw new AccessDeniedException("게시글 삭제 권한이 없습니다.");
         return board;
     }
 

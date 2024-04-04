@@ -7,6 +7,9 @@ server:
       enabled: true
       force: true
 spring:
+  mvc:
+    converters:
+      preferred-json-mapper: gson
   profiles:
     active: local
   datasource:
