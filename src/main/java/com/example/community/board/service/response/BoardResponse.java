@@ -2,9 +2,11 @@ package com.example.community.board.service.response;
 
 import com.example.community.board.domain.Board;
 import com.example.community.board.domain.dto.BoardDto;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -27,8 +29,15 @@ public class BoardResponse {
     private int likeCount;
 
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd@HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime createDateTime;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd@HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime modifiedDateTime;
+
+
     @Builder
-    public BoardResponse(Long id, Long categoryId, String title, String content, String writer, List<ImageResponse> images, int hitCount, int likeCount) {
+    public BoardResponse(Long id, Long categoryId, String title, String content, String writer, List<ImageResponse> images, int hitCount, int likeCount, LocalDateTime createDateTime, LocalDateTime modifiedDateTime) {
         this.id = id;
         this.categoryId = categoryId;
         this.title = title;
@@ -37,6 +46,8 @@ public class BoardResponse {
         this.images = images;
         this.hitCount = hitCount;
         this.likeCount = likeCount;
+        this.createDateTime = createDateTime;
+        this.modifiedDateTime = modifiedDateTime;
     }
 
     public static BoardResponse of(Board board) {
@@ -49,6 +60,8 @@ public class BoardResponse {
                 .writer(board.getMember().getEmail())
                 .hitCount(board.getHitCnt())
                 .likeCount(board.getLikeCount())
+                .createDateTime(board.getCreateDateTime())
+                .modifiedDateTime(board.getModifiedDateTime())
                 .build();
     }
 
@@ -62,6 +75,8 @@ public class BoardResponse {
                 .writer(board.getWriter())
                 .hitCount(board.getHitCnt())
                 .likeCount(board.getLikeCount())
+                .createDateTime(board.getCreateDateTime())
+                .modifiedDateTime(board.getModifiedDateTime())
                 .build();
     }
 }

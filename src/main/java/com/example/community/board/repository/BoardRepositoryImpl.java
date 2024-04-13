@@ -50,7 +50,9 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                         , board.category.name.as("categoryName")
                         , board.member.email.as("writer")
                         , board.hitCnt
-                        , board.likeCount))
+                        , board.likeCount
+                        , board.createDateTime
+                        , board.modifiedDateTime))
                 .from(board)
                 .join(board.member, member)
                 .where(

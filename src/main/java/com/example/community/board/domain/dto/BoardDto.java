@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +31,12 @@ public class BoardDto {
 
     private int likeCount = 0;
 
+    private LocalDateTime createDateTime;
+
+    private LocalDateTime modifiedDateTime;
+
     @Builder
-    public BoardDto(Long id, Long categoryId, String title, String content, List<Image> images, String writer, int hitCnt, int likeCount) {
+    public BoardDto(Long id, Long categoryId, String title, String content, List<Image> images, String writer, int hitCnt, int likeCount, LocalDateTime createDateTime, LocalDateTime modifiedDateTime) {
         this.id = id;
         this.categoryId = categoryId;
         this.title = title;
@@ -40,5 +45,7 @@ public class BoardDto {
         this.writer = writer;
         this.hitCnt = hitCnt;
         this.likeCount = likeCount;
+        this.createDateTime = createDateTime;
+        this.modifiedDateTime = modifiedDateTime;
     }
 }
