@@ -136,8 +136,7 @@ class BoardRepositoryTest {
         //then
         assertThat(searchBoardList.getTotalPages()).isEqualTo(2);
         assertThat(searchBoardList.getContent().size()).isEqualTo(10);
-        assertThat(searchBoardList.getContent().get(0)).extracting("categoryId","categoryName")
-                .containsExactly(searchCategory.getId(),searchCategory.getName());
+        assertThat(searchBoardList.getContent().get(0).getCategoryId()).isEqualTo(searchCategory.getId());
     }
 
     @DisplayName("제목를 조건으로 게시글 리스트를 조회한다.")

@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity(name = "likes")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Like {
+public class BoardLike {
 
 
     @Id
@@ -32,7 +32,7 @@ public class Like {
     private Board board;
 
 
-    public Like(Member member, Board board) {
+    public BoardLike(Member member, Board board) {
         this.member = member;
         this.board = board;
     }

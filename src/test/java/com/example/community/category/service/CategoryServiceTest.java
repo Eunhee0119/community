@@ -1,7 +1,7 @@
 package com.example.community.category.service;
 
-import com.example.community.category.exception.NoSuchCategoryFoundException;
 import com.example.community.category.domain.Category;
+import com.example.community.category.exception.NoSuchCategoryFoundException;
 import com.example.community.category.respository.CategoryRepository;
 import com.example.community.category.service.request.CategoryCreateServiceRequest;
 import com.example.community.category.service.request.CategoryUpdateServiceRequest;
@@ -16,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.util.fixture.category.CategoryFixture.createCategory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;

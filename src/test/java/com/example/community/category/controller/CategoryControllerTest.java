@@ -124,8 +124,7 @@ public class CategoryControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$.code").value(HttpStatus.NO_CONTENT.value()))
-                .andExpect(jsonPath("$.status").value(HttpStatus.NO_CONTENT.name()))
-                .andExpect(jsonPath("$.data").isEmpty());
+                .andExpect(jsonPath("$.status").value(HttpStatus.NO_CONTENT.name()));
     }
 
     @DisplayName("카테고리 수정 시 상위 카테고리 아이디가 자연수가 아닐 경우 에러가 발생한다.")

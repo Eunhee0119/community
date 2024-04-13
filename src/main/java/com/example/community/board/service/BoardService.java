@@ -1,15 +1,15 @@
 package com.example.community.board.service;
 
 import com.example.community.board.domain.Board;
+import com.example.community.board.domain.BoardLike;
 import com.example.community.board.domain.Image;
-import com.example.community.board.domain.Like;
 import com.example.community.board.domain.dto.BoardDto;
 import com.example.community.board.domain.dto.BoardSearchDto;
 import com.example.community.board.exception.NoSuchBoardException;
 import com.example.community.board.factory.ImageFactory;
 import com.example.community.board.repository.BoardRepository;
 import com.example.community.board.repository.ImageRepository;
-import com.example.community.board.repository.LikeRepository;
+import com.example.community.board.repository.BoardLikeRepository;
 import com.example.community.board.service.request.BoardCreateServiceRequest;
 import com.example.community.board.service.request.BoardUpdateServiceRequest;
 import com.example.community.board.service.response.BoardListResponse;
@@ -46,7 +46,7 @@ public class BoardService {
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
-    private final LikeRepository likeRepository;
+    private final BoardLikeRepository boardLikeRepository;
 
     private final FileService fileService;
 
@@ -121,14 +121,14 @@ public class BoardService {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalIdentifierException("회원 정보가 잘못되었습니다."));
 
-        Optional<Like> like = likeRepository.findByMemberAndBoard(member, board);
+        Optional<BoardLike> like = boardLikeRepository.findByMemberAndBoard(member, board);
         if (!like.isPresent()) {
             board.likeCountUp();
-            likeRepository.save(new Like(member, board));
+            boardLikeRepository.save(new BoardLike(member, board));
         }
         else {
             board.likeCountDown();
-            likeRepository.delete(like.get());
+            boardLikeRepository.delete(like.get());
         }
         return board.getLikeCount();
     }
