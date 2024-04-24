@@ -70,7 +70,7 @@ class BoardControllerTest {
         given(boardService.registerBoard(any())).willReturn(BoardResponse.builder().build());
 
         //when//then
-        mockMvc.perform(multipart("/boards")
+        mockMvc.perform(multipart("/api/boards")
                         .file(images)
                         .file(new MockMultipartFile("boardCreateRequest", "", MediaType.APPLICATION_JSON_VALUE, contents.getBytes(StandardCharsets.UTF_8)))
                         .accept(MediaType.APPLICATION_JSON)
@@ -96,7 +96,7 @@ class BoardControllerTest {
         given(boardService.registerBoard(any())).willReturn(BoardResponse.builder().build());
 
         //when//then
-        mockMvc.perform(multipart("/boards")
+        mockMvc.perform(multipart("/api/boards")
                         .file(new MockMultipartFile("boardCreateRequest", "", MediaType.APPLICATION_JSON_VALUE, contents.getBytes(StandardCharsets.UTF_8)))
                         .accept(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8"))
@@ -121,7 +121,7 @@ class BoardControllerTest {
         given(boardService.registerBoard(any())).willReturn(BoardResponse.builder().build());
 
         //when//then
-        mockMvc.perform(multipart("/boards")
+        mockMvc.perform(multipart("/api/boards")
                         .file(new MockMultipartFile("boardCreateRequest", "", MediaType.APPLICATION_JSON_VALUE, contents.getBytes(StandardCharsets.UTF_8)))
                         .accept(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8"))
@@ -146,7 +146,7 @@ class BoardControllerTest {
         given(boardService.registerBoard(any())).willReturn(BoardResponse.builder().build());
 
         //when//then
-        mockMvc.perform(multipart("/boards")
+        mockMvc.perform(multipart("/api/boards")
                         .file(new MockMultipartFile("boardCreateRequest", "", MediaType.APPLICATION_JSON_VALUE, contents.getBytes(StandardCharsets.UTF_8)))
                         .accept(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8"))
@@ -166,7 +166,7 @@ class BoardControllerTest {
         given(boardService.getBoardDetails(any())).willReturn(BoardResponse.builder().build());
 
         //when//then
-        mockMvc.perform(get("/boards/" + 1L))
+        mockMvc.perform(get("/api/boards/" + 1L))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(HttpStatus.OK.value()))
@@ -192,7 +192,7 @@ class BoardControllerTest {
         String contents = objectMapper.writeValueAsString(updateRequest);
 
         MockMultipartHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.multipart("/boards/" + boardId);
+                MockMvcRequestBuilders.multipart("/api/boards/" + boardId);
         builder.with(request -> {
             request.setMethod("PUT");
             return request;
@@ -227,7 +227,7 @@ class BoardControllerTest {
         String contents = objectMapper.writeValueAsString(updateRequest);
 
         MockMultipartHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.multipart("/boards/" + boardId);
+                MockMvcRequestBuilders.multipart("/api/boards/" + boardId);
         builder.with(request -> {
             request.setMethod("PUT");
             return request;
@@ -259,7 +259,7 @@ class BoardControllerTest {
         String contents = objectMapper.writeValueAsString(updateRequest);
 
         MockMultipartHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.multipart("/boards/" + boardId);
+                MockMvcRequestBuilders.multipart("/api/boards/" + boardId);
         builder.with(request -> {
             request.setMethod("PUT");
             return request;
@@ -292,7 +292,7 @@ class BoardControllerTest {
         String contents = objectMapper.writeValueAsString(updateRequest);
 
         MockMultipartHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.multipart("/boards/" + boardId);
+                MockMvcRequestBuilders.multipart("/api/boards/" + boardId);
         builder.with(request -> {
             request.setMethod("PUT");
             return request;
@@ -318,7 +318,7 @@ class BoardControllerTest {
         //given
 
         //when//then
-        mockMvc.perform(delete("/boards/" + 1L))
+        mockMvc.perform(delete("/api/boards/" + 1L))
                 .andDo(print())
                 .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$.code").value(HttpStatus.NO_CONTENT.value()))
@@ -337,7 +337,7 @@ class BoardControllerTest {
         given(boardService.getBoardList(any(), any())).willReturn(boardListResponse);
 
         //when//then
-        mockMvc.perform(get("/boards")
+        mockMvc.perform(get("/api/boards")
                         .param("page", "1")
                         .param("categoryId", String.valueOf(1L)))
                 .andDo(print())
@@ -359,7 +359,7 @@ class BoardControllerTest {
         given(boardService.getBoardList(any(), any())).willReturn(boardListResponse);
 
         //when//then
-        mockMvc.perform(get("/boards")
+        mockMvc.perform(get("/api/boards")
                         .param("page", "1"))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -376,7 +376,7 @@ class BoardControllerTest {
         //given
 
         //when//then
-        mockMvc.perform(post("/boards/1/like"))
+        mockMvc.perform(post("/api/boards/1/like"))
                 .andDo(print())
                 .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$.code").value(HttpStatus.NO_CONTENT.value()))

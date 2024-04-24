@@ -18,6 +18,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -56,9 +58,10 @@ public class SecurityConfig {
                         .accessDeniedHandler(jwtAccessDeniedHandler))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
-                                "/api/members/new", "/api/auth/*"
+                                antMatcher("/api/members/new"),
+                                antMatcher("/api/auth/*")
                         ).anonymous()
-                        .requestMatchers("/api/*", "/api/**").hasAnyRole("MEMBER", "ADMIN")
+                        .requestMatchers(antMatcher( "/api/*"),antMatcher( "/api/**")).hasAnyRole("MEMBER","ADMIN")
                         .anyRequest().permitAll()
                 );
 

@@ -92,7 +92,7 @@ public class JwtTokenProvider implements InitializingBean {
 
     private String createToken(Authentication authentication, long expireTime) {
         String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
+                .map(authority -> "ROLE_" + authority.getAuthority())
                 .collect(Collectors.joining(","));
         long now = (new Date()).getTime();
         Date validity = new Date(now + expireTime);
