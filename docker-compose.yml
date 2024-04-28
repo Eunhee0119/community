@@ -13,5 +13,8 @@ services:
   agent:
     image: ngrinder/agent
     restart: always
+    platform: linux/amd64
     links:
       - controller
+    deploy:
+      replicas: 3
